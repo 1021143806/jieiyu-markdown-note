@@ -148,7 +148,7 @@ PS C:\Users\375563> $MaximumHistoryCount
 
 ##### 2.1.2 用户定义的变量
 
-启用严格模式
+###### 启用严格模式
 
 ```powershell
 set-strictmode -version latest
@@ -180,3 +180,73 @@ color1                         bule1
 ```
 
 Set-Variable 还可以返回所有可用变量
+
+##### 2.1.3 自动变量
+
+###### $null 变量
+
+代表空值
+
+代码清单2-8 为变量赋值$null
+
+```shell
+PS C:\WINDOWS\system32> $foo = $null
+PS C:\WINDOWS\system32> $foo
+PS C:\WINDOWS\system32> $bar
+检索不到变量“$bar”，因为未设置该变量。
+所在位置 行:1 字符: 1
++ $bar
++ 
+    + CategoryInfo          : InvalidOperation: (bar:String) []，RuntimeException
+    + FullyQualifiedErrorId : VariableIsUndefined
+```
+
+代码清单2-9 用Get-Variable命令查找变量
+
+```shell
+PS C:\WINDOWS\system32> get-variable -name foo
+
+Name                           Value
+----                           -----
+foo
+
+
+PS C:\WINDOWS\system32> get-variable -name bar
+get-variable : 找不到名为“bar”的变量。
+所在位置 行:1 字符: 1
++ get-variable -name bar
++ ~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : ObjectNotFound: (bar:String) [Get-Variable], ItemNotFoundException
+    + FullyQualifiedErrorId : VariableNotFound,Microsoft.PowerShell.Commands.GetVariableCommand
+```
+
+$null 非常有用
+
+###### $LASTEXITCODE 变量
+
+程序运行结束后会返回一个**退出码**（或称作返回码）一般 0 表示成功。
+$LASTEXITCODE 变量的值始终是最后执行那个程序的退出码。
+
+```shell
+PS C:\WINDOWS\system32> ping.exe -n 1 dfdfdf.com
+
+正在 Ping hdr-nlb5-4e815dd67a14bf7f.elb.us-east-2.amazonaws.com [3.130.253.23] 具有 32 字节的数据:
+请求超时。
+
+3.130.253.23 的 Ping 统计信息:
+    数据包: 已发送 = 1，已接收 = 0，丢失 = 1 (100% 丢失)，
+PS C:\WINDOWS\system32> ping.exe -n 1 10.68.2.31
+
+正在 Ping 10.68.2.31 具有 32 字节的数据:
+来自 10.68.2.31 的回复: 字节=32 时间=6ms TTL=62
+
+10.68.2.31 的 Ping 统计信息:
+    数据包: 已发送 = 1，已接收 = 1，丢失 = 0 (0% 丢失)，
+往返行程的估计时间(以毫秒为单位):
+    最短 = 6ms，最长 = 6ms，平均 = 6ms
+```
+
+###### 偏好设置变量
+
+这类变量用于控制各种输出流的默认行为
+包括Error、 Warning、Verbose、Debug和Information
