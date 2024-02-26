@@ -250,3 +250,291 @@ PS C:\WINDOWS\system32> ping.exe -n 1 10.68.2.31
 
 这类变量用于控制各种输出流的默认行为
 包括Error、 Warning、Verbose、Debug和Information
+
+#### 2.2 数据类型
+
+PowerShell 有多种数据类型，包括布尔值、字符串和整数，而且修改变量的数据类型不会报错。
+
+```shell
+PS C:\Users\375563> $foo =1
+PS C:\Users\375563> $foo = 'one'
+PS C:\Users\375563> $foo = $true
+```
+
+##### 2.2.1 布尔值
+
+在 PowerShell 中，布尔值称作 bools，分别使用 $true 和 $false 表示
+
+```shell
+PS C:\Users\375563> $isOn = $true
+PS C:\Users\375563> $isOn
+True
+```
+
+##### 2.2.2 整数和浮点数
+
+- 整数类型
+  - 小数部分会四舍五入
+  - 有正负号
+  - Int32 (-2147483648,2147483647)
+  - Int64 (-9223372036854775808,9223372036854775807)
+
+```shell
+  PS K:\vscode\jieiyu-markdown-note> $num = 1
+PS K:\vscode\jieiyu-markdown-note> $num    
+1
+PS K:\vscode\jieiyu-markdown-note> $num.GetType().name
+Int32
+PS K:\vscode\jieiyu-markdown-note> $num = 1.5
+PS K:\vscode\jieiyu-markdown-note> $num.GetType().name
+Double
+PS K:\vscode\jieiyu-markdown-note> [Int32]$num
+2
+```
+
+- 浮点数数据类型
+  - Double
+
+##### 2.2.3 字符串
+
+- 合并字符串和变量
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $language = 'PowerShell'
+PS K:\vscode\jieiyu-markdown-note> $color = 'blue'
+PS K:\vscode\jieiyu-markdown-note> $sentence = "Today $color" 
+PS K:\vscode\jieiyu-markdown-note> $sentence
+Today blue
+PS K:\vscode\jieiyu-markdown-note> $color = 'blue2'
+PS K:\vscode\jieiyu-markdown-note> $sentence
+Today blue
+PS K:\vscode\jieiyu-markdown-note> $sentence = "Today $color"
+PS K:\vscode\jieiyu-markdown-note> $sentence
+Today blue2
+```
+
+- 单引号与双引号
+
+#### 2.3 对象
+
+一切皆对象。
+对象是某个模板的单个实例。这个模板称为类，指明了对象包含的东西。
+滴哦下哦昂所属的类决定其有哪些方法可用。
+
+##### 2.3.1 查看属性
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $color = 'red'
+PS K:\vscode\jieiyu-markdown-note> $color
+red
+PS K:\vscode\jieiyu-markdown-note> Select-Object -InputObject $color -Property *
+
+Length
+------
+     3
+
+
+PS K:\vscode\jieiyu-markdown-note> $color.Length
+3'
+```
+
+##### 2.3.2 使用 Get-Member cmdlet
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> Get-Member -InputObject $color
+
+
+   TypeName:System.String
+
+Name             MemberType            Definition
+----             ----------            ----------
+Clone            Method                System.Object Clone(), System.Object ICloneable.Clone()
+CompareTo        Method                int CompareTo(System.Object value), int CompareTo(string strB), int IComparable.CompareTo(System.Object obj), int IComparable[string].CompareTo(string other)
+Contains         Method                bool Contains(string value)
+CopyTo           Method                void CopyTo(int sourceIndex, char[] destination, int destinationIndex, int count)
+EndsWith         Method                bool EndsWith(string value), bool EndsWith(string value, System.StringComparison comparisonType), bool EndsWith(string value, bool ignoreCase, cultureinfo culture)
+Equals           Method                bool Equals(System.Object obj), bool Equals(string value), bool Equals(string value, System.StringComparison comparisonType), bool IEquatable[string].Equals(string other)
+GetEnumerator    Method                System.CharEnumerator GetEnumerator(), System.Collections.IEnumerator IEnumerable.GetEnumerator(), System.Collections.Generic.IEnumerator[char] IEnumerable[char].GetEnumerator()        
+GetHashCode      Method                int GetHashCode()
+GetType          Method                type GetType()
+GetTypeCode      Method                System.TypeCode GetTypeCode(), System.TypeCode IConvertible.GetTypeCode()
+IndexOf          Method                int IndexOf(char value), int IndexOf(char value, int startIndex), int IndexOf(string value), int IndexOf(string value, int startIndex), int IndexOf(string value, int startIndex, int ... 
+IndexOfAny       Method                int IndexOfAny(char[] anyOf), int IndexOfAny(char[] anyOf, int startIndex), int IndexOfAny(char[] anyOf, int startIndex, int count)
+Insert           Method                string Insert(int startIndex, string value)
+IsNormalized     Method                bool IsNormalized(), bool IsNormalized(System.Text.NormalizationForm normalizationForm)
+LastIndexOf      Method                int LastIndexOf(char value), int LastIndexOf(char value, int startIndex), int LastIndexOf(string value), int LastIndexOf(string value, int startIndex), int LastIndexOf(string value, ... 
+LastIndexOfAny   Method                int LastIndexOfAny(char[] anyOf), int LastIndexOfAny(char[] anyOf, int startIndex), int LastIndexOfAny(char[] anyOf, int startIndex, int count)
+Normalize        Method                string Normalize(), string Normalize(System.Text.NormalizationForm normalizationForm)
+PadLeft          Method                string PadLeft(int totalWidth), string PadLeft(int totalWidth, char paddingChar)
+PadRight         Method                string PadRight(int totalWidth), string PadRight(int totalWidth, char paddingChar)
+Remove           Method                string Remove(int startIndex, int count), string Remove(int startIndex)
+Replace          Method                string Replace(char oldChar, char newChar), string Replace(string oldValue, string newValue)
+Split            Method                string[] Split(Params char[] separator), string[] Split(char[] separator, int count), string[] Split(char[] separator, System.StringSplitOptions options), string[] Split(char[] separ...
+StartsWith       Method                bool StartsWith(string value), bool StartsWith(string value, System.StringComparison comparisonType), bool StartsWith(string value, bool ignoreCase, cultureinfo culture)
+Substring        Method                string Substring(int startIndex), string Substring(int startIndex, int length)
+ToBoolean        Method                bool IConvertible.ToBoolean(System.IFormatProvider provider)
+ToByte           Method                byte IConvertible.ToByte(System.IFormatProvider provider)
+ToChar           Method                char IConvertible.ToChar(System.IFormatProvider provider)
+ToCharArray      Method                char[] ToCharArray(), char[] ToCharArray(int startIndex, int length)
+ToDateTime       Method                datetime IConvertible.ToDateTime(System.IFormatProvider provider)
+ToDecimal        Method                decimal IConvertible.ToDecimal(System.IFormatProvider provider)
+ToDouble         Method                double IConvertible.ToDouble(System.IFormatProvider provider)
+ToInt16          Method                int16 IConvertible.ToInt16(System.IFormatProvider provider)
+ToInt32          Method                int IConvertible.ToInt32(System.IFormatProvider provider)
+ToInt64          Method                long IConvertible.ToInt64(System.IFormatProvider provider)
+ToLower          Method                string ToLower(), string ToLower(cultureinfo culture)
+ToLowerInvariant Method                string ToLowerInvariant()
+ToSByte          Method                sbyte IConvertible.ToSByte(System.IFormatProvider provider)
+ToSingle         Method                float IConvertible.ToSingle(System.IFormatProvider provider)
+ToString         Method                string ToString(), string ToString(System.IFormatProvider provider), string IConvertible.ToString(System.IFormatProvider provider)
+ToType           Method                System.Object IConvertible.ToType(type conversionType, System.IFormatProvider provider)
+ToUInt16         Method                uint16 IConvertible.ToUInt16(System.IFormatProvider provider)
+ToUInt32         Method                uint32 IConvertible.ToUInt32(System.IFormatProvider provider)
+ToUInt64         Method                uint64 IConvertible.ToUInt64(System.IFormatProvider provider)
+ToUpper          Method                string ToUpper(), string ToUpper(cultureinfo culture)
+ToUpperInvariant Method                string ToUpperInvariant()
+Trim             Method                string Trim(Params char[] trimChars), string Trim()
+TrimEnd          Method                string TrimEnd(Params char[] trimChars)
+TrimStart        Method                string TrimStart(Params char[] trimChars)
+Chars            ParameterizedProperty char Chars(int index) {get;}
+Length           Property              int Length {get;}
+```
+
+##### 2.3.3 调用方法
+
+查看字符串的 Remobe() 方法
+
+```shell
+   TypeName:System.String
+
+Name   MemberType Definition
+----   ---------- ----------
+Remove Method     string Remove(int startIndex, int count), string Remove(int startIndex)
+```
+
+调用方法
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $color.Remove(1,1)
+rd
+PS K:\vscode\jieiyu-markdown-note> $color            
+red
+```
+
+#### 2.4 数据结构
+
+数据结构
+
+```mermaid
+graph LR
+A(数据结构) --> 1.数组
+A --> 2.Array-List
+A --> 3.哈希表
+```
+
+##### 2.4.1 数组
+
+###### 定义数组
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $colorPicker = @('blue','white','yellow','black')
+PS K:\vscode\jieiyu-markdown-note> $colorPicker
+blue
+white
+yellow
+black
+```
+
+###### 读取数组元素
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $colorPicker[0]
+blue
+```
+
+访问多个元素
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> 1..3           
+1
+2
+3
+PS K:\vscode\jieiyu-markdown-note> $colorPicker[1..3]
+white
+yellow
+black
+```
+
+###### 将元素添加到数组
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $colorPicker = $colorPicker + ‘orange'
+PS K:\vscode\jieiyu-markdown-note> $colorPicker
+blue
+white
+yellow
+black
+orange
+```
+
+使用 +=
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $colorPicker += ‘brown'
+PS K:\vscode\jieiyu-markdown-note> $colorPicker
+blue
+white
+yellow
+black
+orange
+brown
+```
+
+##### 2.4.2 ArrayList
+
+ArrayList 的大小在添加或删除元素后可动态调整，处理大量数据时性能十分优越。
+
+创建 ArrayList
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $colorPicker = [System.Collections.ArrayList]@('blue','white','yellow','black')
+PS K:\vscode\jieiyu-markdown-note> $colorPicker
+blue
+white
+yellow
+black
+```
+
+###### 将元素添加到ArrayList
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $colorPicker.Add('gray')
+4
+PS K:\vscode\jieiyu-markdown-note> $null = $colorPicker.Add('gray')  //防止输出
+PS K:\vscode\jieiyu-markdown-note> $colorPicker
+blue
+white
+yellow
+black
+gray
+gray
+```
+
+###### ArrayList 中删除元素
+
+```shell
+PS K:\vscode\jieiyu-markdown-note> $null = $colorPicker.Remove('gray') 
+PS K:\vscode\jieiyu-markdown-note> $colorPicker
+blue
+white
+yellow
+black
+gray
+```
+
+可以通过值本身来引用元素，如果有多个相同，会删除离开头最近的元素。
+
+##### 2.4.3 哈希表
+
+两个数据对应——哈希表（字典）
+组键-值对
