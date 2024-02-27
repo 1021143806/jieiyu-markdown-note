@@ -538,3 +538,262 @@ gray
 
 两个数据对应——哈希表（字典）
 组键-值对
+
+###### 创建哈希表
+
+```shell
+PS> $users = @{
+    abertram = 'Adam Bertram';
+    raquelcer = 'Raquel Cerillo';
+    zheng21 = 'Justin Zheng'
+}
+PS> $users
+Name                           Value
+----                           -----
+abertram                       Adam Bertram
+raquelcer                      Raquel Cerillo
+zheng21                        Justin Zheng
+```
+
+PowerShell不允许创建有重复键的哈希表，每一个键都要唯一指向一个值。值可以是一个数组，甚至另一个哈希表。
+
+###### 从哈希表中读取元素
+
+代码清单2-35　访问哈希表中的值
+
+```shell
+PS> $users['abertram']
+Adam Bertram
+PS> $users.abertram
+Adam Bertram
+```
+
+如果想查看一个哈希表（或其他任何对象）的所有属性，可以执行下列命令。
+
+```shell
+PS> Select-Object -InputObject $yourobject -Property *
+```
+代码清单2-37　向哈希表中添加元素
+
+```shell
+PS> $users.Add('natice', 'Natalie Ice')
+PS> $users['phrigo'] = 'Phil Rigo'
+```
+
+代码清单2-38　检查哈希表中的元素[插图]
+
+```shell
+PS> $users.ContainsKey('johnnyq')
+False
+```
+
+确认哈希表中存在相应的键后，使用一个等号即可修改对应的值，如代码清单2-39所示。代码清单2-39　修改哈希表中的值[插图]
+
+```shell
+PS> $users['phrigo'] = 'Phoebe Rigo'
+PS> $users['phrigo']
+Phoebe Rigo
+```
+
+我们知道向哈希表中添加元素有两种方法。但从哈希表中删除元素只有一种方法，如接下来的内容所述。?从哈希表中删除元素与ArrayList一样，哈希表也有Remove()方法。调用该方法，传入想删除的元素的键即可，如代码清单2-40所示。代码清单2-40　从哈希表中删除元素[插图]
+
+```shell
+PS> $users.Remove('natice')
+```
+
+至此用户应该少了一个，可以调用这个哈希表确认一下。记住，可以使用Keys属性查看有哪些键。
+
+#### 2.5 自定义对象
+
+代码清单2-41　用New-Object自定义对象
+
+```shell
+PS> $myFirstCustomObject = New-Object -TypeName PSCustomObject
+```
+
+代码清单2-42　用PSCustomObject类型校正自定义一个对象
+
+```shell
+PS> $myFirstCustomObject = [PSCustomObject]@{OSBuild = 'x'; OSVersion = 'y'}
+```
+
+如代码清单2-42所示。这里我们定义了一个哈希表，其中键是属性名，值是属性的值，然后再将类型校正为PSCustomObject。
+
+代码清单2-43　查看一个自定义对象的属性和方法
+
+```shell
+PS> Get-Member  -InputObject $myFirstCustomObject
+    TypeName: System.Management.Automation.PSCustomObject
+Name        MemberType   Definition
+----        ----------   ----------
+Equals      Method       bool Equals(System.Object obj)
+GetHashCode Method       int GetHashCode()
+GetType     Method       type GetType()
+ToString    Method       string ToString()
+OSBuild     NoteProperty string OSBuild=OSBuild
+OSVersion   NoteProperty string OSVersion=Version
+```
+
+访问数据
+
+```shell
+PS> $myFirstCustomObject.OSBuild
+x
+PS> $myFirstCustomObject.OSVersion
+y
+```
+
+PSCustomObject
+PS自定义对象
+
+### 第 3 章 组合命令
+
+#### 3.1 启动一个 Windows 服务
+
+代码清单3-1　查找一项服务，然后通过Name参数启动
+
+```shell
+PS> $serviceName = 'wuauserv'
+PS> Get-Service -Name $serviceName
+Status   Name               DisplayName
+------   ----               -----------
+Running  wuauserv           Windows Update
+PS> Start-Service -Name $serviceName
+```
+
+先执行Get-Service命令是为了确保PowerShell不抛出任何错误。我们想启动的服务可能已经正在运行，此时，Start-Service会直接将控制权返回给控制台。
+
+#### 3.2 使用管道
+
+```shell
+PS> command1 | command2
+```
+
+PowerShell管道的独特之处是，传递的不仅仅是字符串，还可以是==对象==。
+
+代码清单3-2　将现有服务通过管道传给Start-Service命令
+
+```shell
+PS> Get-Service -Name 'wuauserv' | Start-Service
+```
+
+如果愿意，还可以将代码清单3-2重写为一个参数也不使用。
+
+```shell
+PS> 'wuauserv' | Get-Service | Start-Service
+```
+
+![alt text](image.png)
+
+如果想在PowerShell窗口中显示这个文件的内容，可以使用Get-Content cmdlet的Path参数。
+
+```shell
+PS> Get-Content -Path C:\Services.txt
+Wuauserv
+W32Time
+```
+
+Get-Content命令会逐行读取文件，分别将各行添加到一个数组中，然后返回该数组。代码清单3-3使用管道将Get-Content返回的数组传给了Get-Service命令。
+
+```shell
+PS> Get-Content -Path C:\Services.txt | Get-Service
+Status   Name               DisplayName
+------   ----               -----------
+Stopped  Wuauserv           Windows Update
+Stopped  W32Time            Windows Time
+```
+
+Get-Content命令会读入文本文件的内容，并生成一个数组。但是，PowerShell并不会通过管道发送数组本身，而会将数组拆包，通过管道一一发送其中的每个元素。
+
+通过管道串联在一起的命令数量没有限制。不过，一旦超过五个，就应该重新审视了。注意，虽然管道很强大，但不是任何情况下都可以使用。多数PowerShell命令只接受特定类型的管道输入，有些命令甚至根本不接受管道输入。下一节将阐明参数绑定，探讨PowerShell处理管道输入的方式。
+
+##### 3.2.3 参数绑定
+
+如果命令的任何一个参数都不支持管道，或者PowerShell找不到适当的绑定，那么通过管道传递信息就会导致错误。例如，可以尝试执行下列命令。
+
+```shell
+PS> 'string' | Get-Process
+Get-Process : The input object cannot be bound to any parameters for the command either...
+--snip--
+```
+
+PowerShell会通过两种方式建立起管道输入与参数之间的对应关系。
+
+```mermaid
+graph TD
+A(建立起管道输入与参数之间的对应关系) 
+A --> A1(ByValue)
+A --> A2(借助属性名称
+ByPropertyName)
+A1 --> A11(PowerShell
+会根据传入的对象类型
+做相应的解释)
+A1 --> A12(通过
+ByValue 方式
+传递的各个参数
+只能为同一类型)
+A2 --> A21(检查传入的对象中
+有没有相应的
+属性名称)
+```
+
+（比如这里的ComputerName），如果有，就将属性的值作为参数的值。综上所述，如果想同时将服务名称和计算机名称传给Get-Service命令，则需要创建一个PSCustomObject对象，并传入该对象，如代码清单3-6所示。
+
+```shell
+PS> $serviceObject = [PSCustomObject]@{Name = 'wuauserv'; ComputerName = 'SERV1'}
+PS> $serviceObject | Get-Service
+```
+
+#### ==3.3 编写脚本==
+
+```shell
+PS> C:\FolderPathToScript\script.ps1
+Hello, I am in a script!
+```
+
+##### 3.3.1 设置执行策略
+
+在默认情况下，PowerShell不允许运行任何脚本。如果在默认的安装环境中尝试运行外部脚本，那么PowerShell会报错，如代码清单3-8所示。
+
+代码清单3-9　执行Get-ExecutionPolicy命令，显示当前执行策略
+
+```shell
+PS> Get-ExecutionPolicy
+Restricted
+```
+
+代码清单3-10　用Set-ExecutionPolicy命令修改执行策略,需要管理员身份执行
+
+```shell
+PS C:\Windows\system32> Set-ExecutionPolicy -ExecutionPolicy RemoteSigned
+
+执行策略更改
+执行策略可帮助你防止执行不信任的脚本。更改执行策略可能会产生安全风险，如 https:/go.microsoft.com/fwlink/?LinkID=135170
+中的 about_Execution_Policies 帮助主题所述。是否要更改执行策略?
+[Y] 是(Y)  [A] 全是(A)  [N] 否(N)  [L] 全否(L)  [S] 暂停(S)  [?] 帮助 (默认值为“N”): a
+PS C:\Windows\system32> Get-ExecutionPolicy
+RemoteSigned
+```
+
+##### 使用 PowerShell ISE
+
+第一行代码
+
+```shell
+Write-Host 'Hello, I am in a script!'
+```
+
+执行代码
+
+``` shell
+PS K:\vscode\jieiyu-markdown-note\读书笔记\PowerShell\脚本> .\script.ps1        
+Hello, I am in a script!
+```
+
+### 第 4 章 控制流
+
+if/then语句、switch语句以及各种循环，为代码增添必要的灵活性
+
+#### 4.1 理解控制流
+
+控制流背后的基本思想：即根据预定的逻辑执行不同指令序列的能力。
